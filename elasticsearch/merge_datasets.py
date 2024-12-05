@@ -4,6 +4,7 @@ folder="RAW_DATA"
 reviews_path = folder + "/Digital_Music.jsonl"
 items_path = folder + "/meta_Digital_Music.jsonl"
 output_path = folder + "/merged_data.jsonl"
+merging_attribute = "parent_asin"
 
 print(f"Reading {reviews_path} and {items_path}")
 
@@ -26,12 +27,12 @@ print(f"Processed {reviews_path} and {items_path}")
 print(f"Merging {reviews_path} and {items_path}")
 
 # Create a hash map for items dataset
-items_map = {item["parent_asin"]: item for item in items}
+items_map = {item[merging_attribute]: item for item in items}
 
 # Merge reviews with item details, nesting the product information in an 'item' object
 merged_data = []
 for review in reviews:
-    parent_asin = review.get("parent_asin")
+    parent_asin = review.get(merging_attribute)
     if parent_asin in items_map.keys():
         # Nest item details inside an 'item' object
         merged_review = {**review, "item": items_map[parent_asin]}
