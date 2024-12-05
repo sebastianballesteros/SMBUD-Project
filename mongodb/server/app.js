@@ -5,18 +5,14 @@ const express = require("express");
 
 // Enables front end connection
 const cors = require("cors");
-
 const app = express();
-
 //app.use(morgan('dev'));
 
 const PORT = process.env.PORT || 8080;
 
 // Database connection
-if (process.env.NODE_ENV != "test") {
-  const dbConnect = require("./db/dbConnect");
-  //dbConnect();
-}
+const dbConnect = require("./db/dbConnect");
+const connectionSuccessful = dbConnect();
 
 app.use(
   cors({
@@ -39,6 +35,8 @@ if (process.env.NODE_ENV === "test") {
 }
 
 app.get('/', (request, response) => {
-  //response.send('Hello from the backend')
-  response.status(200).json("Hello from the backend");
+  if (connectionSuccessful)
+    response.status(200).json("Successfully connected to mongoDB");
+  else
+    response.status(200).json("Could not connect to mongoDB");
 })

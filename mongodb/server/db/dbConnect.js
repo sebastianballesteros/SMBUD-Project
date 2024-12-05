@@ -8,10 +8,12 @@ async function dbConnect() {
     .connect(process.env.DB_URL)
     .then(() => {
       console.log("Successfully connected to mongo.");
+      return true
     })
     .catch((error) => {
       console.log("Unable to connect to mongo.");
       console.error(error);
+      return false
     });
 };
 
