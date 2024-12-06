@@ -3,7 +3,7 @@ import json
 folder="RAW_DATA"
 reviews_path = folder + "/Digital_Music.jsonl"
 items_path = folder + "/meta_Digital_Music.jsonl"
-output_path = folder + "/merged_data.jsonl"
+output_path = folder + "/merged_Digital_music.jsonl"
 merging_attribute = "parent_asin"
 
 print(f"Reading {reviews_path} and {items_path}")
@@ -40,6 +40,7 @@ for review in reviews:
 
 # Save the merged data to a new JSON file
 with open(output_path, 'w') as f:
-    json.dump(merged_data, f, indent=4)
+    for merged_review in merged_data:
+        f.write(json.dumps(merged_review) + '\n')
 
 print(f"Merge complete! Data saved in 'merged_data.json'.")
