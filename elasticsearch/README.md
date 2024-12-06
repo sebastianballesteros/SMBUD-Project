@@ -1,4 +1,4 @@
-# TODO: En el bash se debe cambiar el usuarname y password con el que se llama a la API Bulk
+# Elasticsearch index creation and ingestion of data
 Scripts should be run in the following order:
 
 1. To create an index run ./create_index.sh 
