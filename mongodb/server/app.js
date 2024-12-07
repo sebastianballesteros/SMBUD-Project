@@ -6,13 +6,13 @@ const express = require("express");
 // Enables front end connection
 const cors = require("cors");
 const app = express();
-//app.use(morgan('dev'));
 
 const PORT = process.env.PORT || 8080;
 
-// Database connection
+// Database connection and querying
 const dbConnect = require("./db/dbConnect");
 const connectionSuccessful = dbConnect();
+const queryService = require("./db/queries")
 
 app.use(
   cors({
@@ -39,4 +39,22 @@ app.get('/', (request, response) => {
     response.status(200).json("Successfully connected to mongoDB");
   else
     response.status(200).json("Could not connect to mongoDB");
-})
+});
+
+app.get('/query1', (request, response) => {
+    queryService.query1().then((results) => {
+      response.status(200).json({results});
+    });
+});
+
+app.get('/query2', (request, response) => {
+    queryService.query2().then((results) => {
+      response.status(200).json({results});
+    });
+});
+
+app.get('/query3', (request, response) => {
+    queryService.query3().then((results) => {
+      response.status(200).json({results});
+    });
+});
