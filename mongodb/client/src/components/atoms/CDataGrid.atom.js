@@ -3,7 +3,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import dataGridStyles from '../../styles/atoms/DataGrid.style';
 
 
-const TLDataGrid = (props) => {
+const CDataGrid = (props) => {
 
   return (
     <div style={{ height: 450, width: '100%' }}>
@@ -19,4 +19,4 @@ const TLDataGrid = (props) => {
   );
 };
 
-export default TLDataGrid;
+export default CDataGrid;

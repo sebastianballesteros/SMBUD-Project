@@ -2,7 +2,7 @@ import React from 'react';
 
 import Button from '@mui/material/Button';
 
-const TLButton = (props) => {
+const CButton = (props) => {
 
   return (
     <Button {...props}>{props.label}</Button>
@@ -11,4 +11,4 @@ const TLButton = (props) => {
 };
 
 
-export default TLButton;
+export default CButton;

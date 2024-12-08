@@ -2,7 +2,7 @@ import React from 'react';
 
 import TextField from "@mui/material/TextField";
 
-const TLTextField = (props) => {
+const CTextField = (props) => {
 
     return (
         <TextField variant='filled' {...props} {...(props.error && {error:true, helperText: props.error})} />
@@ -11,4 +11,4 @@ const TLTextField = (props) => {
 };
 
 
-export default TLTextField;
+export default CTextField;

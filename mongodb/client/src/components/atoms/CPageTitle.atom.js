@@ -2,7 +2,7 @@ import React from 'react';
 
 import Typography  from "@mui/material/Typography";
 
-const TLPageTitle = (props) => {
+const CPageTitle = (props) => {
 
     return (
         <Typography sx={{ color: 'primary.main', fontWeight: '700', fontSize: '2.25rem'}}>{props.children}</Typography>
@@ -11,4 +11,4 @@ const TLPageTitle = (props) => {
 };
 
 
-export default TLPageTitle;
+export default CPageTitle;
