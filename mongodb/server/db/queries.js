@@ -54,3 +54,117 @@ module.exports.query3 = async () => {
     return documents
   });
 }
+
+// Query 4
+module.exports.query4 = async () => {
+  // Learning resources are prefered by developers based on their education level
+  query = [
+  
+    { $unwind: "$LearnCode" },
+    
+    {
+      $group: {
+        _id: { EdLevel: "$EdLevel", LearnCode: "$LearnCode" },
+        count: { $sum: 1 }
+      }
+    },
+    
+    {
+      $group: {
+        _id: "$_id.EdLevel",
+        mostPreferredResource: { $first: "$_id.LearnCode" },
+        maxCount: { $first: "$count" }
+      }
+    },
+    
+    { $sort: { _id: 1 } },
+    
+    {
+      $project: {
+        _id: 0,
+        EdLevel: "$_id",
+        PreferedResource: "$mostPreferredResource"
+      }
+    }
+  ]
+
+  return await Developers.aggregate(query).toArray((error, documents) => {
+    return documents
+  });
+}
+
+// Query 5
+module.exports.query5 = async () => {
+  // Anual salary for developers based on the education level
+  query = [
+    { $match: { 
+      CompTotal: { $ne: null }, 
+      EdLevel: { $ne: null} } 
+    },
+    { $group: { 
+      _id: "$EdLevel", 
+      averageSalary: { $avg: "$CompTotal" } } 
+    },
+    {
+      $project: {
+        _id: 0,
+        EdLevel: "$_id",
+        AverageSalary: { $round: ["$averageSalary", 2] } // Round to 2 decimal places
+      }
+    }
+  ]
+
+  return await Developers.aggregate(query).toArray((error, documents) => {
+    return documents
+  });
+}
+
+// Query 6
+
+module.exports.query6 = async () => {
+  // Database used based on the organization size
+  query = [
+    {
+      $match: {
+        OrgSize: { $ne: null },
+        DatabaseHaveWorkedWith: { $ne: null, $not: { $size: 0 } }
+      }
+    },
+    
+    { $unwind: "$DatabaseHaveWorkedWith" },
+    
+    {
+      $group: {
+        _id: { OrgSize: "$OrgSize", Database: "$DatabaseHaveWorkedWith" },
+        count: { $sum: 1 }
+      }
+    },
+    
+    {
+      $sort: { "_id.OrgSize": 1, count: -1 }
+    },
+    
+    {
+      $group: {
+        _id: "$_id.OrgSize",
+        mostUsedDatabase: { $first: "$_id.Database" },
+        count: { $first: "$count" }
+      }
+    },
+    
+    { $sort: { _id: 1 } },
+    
+    {
+      $project: {
+        _id: 0,
+        OrgSize: "$_id",
+        MostUsedDatabase: "$mostUsedDatabase",
+        Count: "$count"
+      }
+    }
+  ]
+
+  return await Developers.aggregate(query).toArray((error, documents) => {
+    return documents
+  });
+}
