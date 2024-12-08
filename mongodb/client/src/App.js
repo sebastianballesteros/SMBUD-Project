@@ -1,31 +1,26 @@
-import logo from './logo.svg';
 import './App.css';
 import { useState, useEffect } from 'react'
+import { ThemeProvider as ThemeMaterial} from '@mui/material/styles';
+import { ThemeProvider as ThemeStyled} from 'styled-components';
+import CssBaseline from '@mui/material/CssBaseline';
+
+
+import Router from './routers/Router';
+import theme from './styles/theme';
 
 function App() {
-  const [message, setMessage] = useState([]);
 
   useEffect(() => {
     console.log(process.env.REACT_APP_BACKEND)
-    fetch(process.env.REACT_APP_BACKEND)
-      .then((res) => {
-        return res.json();
-      })
-      .then((data) => {
-        console.log(data);
-        setMessage(data);
-      });
   }, []);
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          {message}
-        </p>
-      </header>
-    </div>
+    <ThemeMaterial theme = {theme}>
+      <CssBaseline />
+      <ThemeStyled theme = {theme}>
+        <Router />
+      </ThemeStyled>
+    </ThemeMaterial>
   );
 }
 
