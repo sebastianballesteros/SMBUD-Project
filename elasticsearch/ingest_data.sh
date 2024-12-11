@@ -2,12 +2,15 @@
 
 # Check if both input and output folders are provided
 
-INPUT_FOLDER="RAW_DATA"
+INPUT_FOLDER="MERGED_DATA"
 OUTPUT_FOLDER="PREPARED_DATA"
 PYTHON_SCRIPT="process_file.py"
-ES_INDEX="test_index_v3"
-ES_HOST="http://localhost:9200"
-PASSWORD=8kScDrZY
+# ES_INDEX="test_index_v3"
+# ES_HOST="http://localhost:9200"
+# PASSWORD=8kScDrZY
+ES_INDEX="reviews_index"
+ES_HOST="https://localhost:9200"
+PASSWORD=gCLiJEL7E*+uA55wZOqg
 CHUNK_SIZE=5000  # Number of lines per chunk
 
 # Check if the input folder exists
