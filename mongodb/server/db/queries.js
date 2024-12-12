@@ -347,3 +347,71 @@ module.exports.query9 = async () => {
   });
 }
 
+
+module.exports.query10 = async () => {
+  //Employment status based on country 
+  query = [
+    {
+      $match: {
+        '$OrgSize': { $ne: null },
+        '$OrgSize': { $ne: NaN }, 
+        '$DatabaseHaveWorkedWith': { $ne: null, $not: { $size: 0 } }
+      }
+    },
+    {
+      $group: {
+        _id: '$OrgSize',
+        count: { $sum: 1 }
+      }
+    }
+    
+
+    //db.Developers.aggregate([{$match: {OrgSize: { $ne: null }, OrgSize: { $ne: NaN }, DatabaseHaveWorkedWith: { $ne: null, $not: { $size: 0 } }}},{ $group: {_id: '$OrgSize',count: {$sum: 1}}}])
+    /*{
+      $match: {
+        OrgSize: { $ne: null },
+        DatabaseHaveWorkedWith: { $ne: null, $not: { $size: 0 } }
+      }
+    },
+    
+    { $unwind: "$DatabaseHaveWorkedWith" },
+    
+    {
+      $group: {
+        _id: { OrgSize: "$OrgSize", Database: "$DatabaseHaveWorkedWith" },
+        count: { $sum: 1 }
+      }
+    },
+    
+    {
+      $sort: { 
+        "_id.OrgSize": 1, 
+        count: -1 
+      }
+    },
+    
+    {
+      $group: {
+        _id: "$_id.OrgSize",
+        mostUsedDatabase: { $first: "$_id.Database" },
+        count: { $first: "$count" }
+      }
+    },
+    
+    { $sort: { _id: 1 } },
+    
+    {
+      $project: {
+        _id: 0,
+        OrgSize: "$_id",
+        MostUsedDatabase: "$mostUsedDatabase",
+        Count: "$count"
+      }
+    }*/
+  ]
+
+  return await Developers.aggregate(query).toArray((error, documents) => {
+    return documents
+  });
+}
+

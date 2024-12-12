@@ -94,3 +94,9 @@ app.get('/query9', (request, response) => {
     response.status(200).json({results});
   });
 });
+
+app.get('/query10', (request, response) => {
+  queryService.query10().then((results) => {
+    response.status(200).json({results});
+  });
+});
