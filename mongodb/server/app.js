@@ -76,3 +76,21 @@ app.get('/query6', (request, response) => {
       response.status(200).json({results});
     });
 });
+
+app.get('/query7', (request, response) => {
+  queryService.query7().then((results) => {
+    response.status(200).json({results});
+  });
+});
+
+app.get('/query8', (request, response) => {
+  queryService.query8().then((results) => {
+    response.status(200).json({results});
+  });
+});
+
+app.get('/query9', (request, response) => {
+  queryService.query9().then((results) => {
+    response.status(200).json({results});
+  });
+});
