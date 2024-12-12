@@ -66,8 +66,7 @@ module.exports.query3 = async () => {
       $sort: {
         Count: -1 
       }
-    },
-    
+    }    
   ]
 
   return await Developers.aggregate(query).toArray((error, documents) => {
@@ -199,7 +198,7 @@ module.exports.query6 = async () => {
 }
 
 module.exports.query7 = async () => {
-  //Most desired database to work with based on age
+  //Most desired database to work with based on age group
   query = [
     { 
       $match: { 
@@ -230,7 +229,7 @@ module.exports.query7 = async () => {
     {
       $group: {
         _id: "$Age", // Group by age only
-        Database: { $first: "$Database" }, // Take the first database for each age group (most used)
+        Database: { $first: "$Database" }, // Take the first database for each age group (most desired to work with)
         Count: { $first: "$Count" } // Get the count of the most used database
       }
     },
@@ -243,7 +242,7 @@ module.exports.query7 = async () => {
       $project: {
         _id: 0,
         Age: "$_id",
-        MostUsedDatabase: "$Database",
+        MostDesiredDatabase: "$Database",
         Count: "$Count"
       }
     }
@@ -256,6 +255,7 @@ module.exports.query7 = async () => {
 
 
 module.exports.query8 = async () => {
+  //Average years coding based on developer type
   query = [
     { $match: 
       { 
@@ -305,6 +305,7 @@ module.exports.query8 = async () => {
 }
 
 module.exports.query9 = async () => {
+  //Employment status based on country 
   query = [
     {
       $unwind: "$Employment"
