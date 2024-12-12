@@ -5,8 +5,10 @@ import url from '../config';
 export async function getQuery (queryId, setValues) {
   await axios.get(`${url}query${queryId}`)
   .then(response => {
-    let dataParse = response.data.results.map((row) => {
-      return {...row, id: row._id ? row._id : "Unknown"}
+    console.log(response.data.results
+    )
+    let dataParse = response.data.results.map((row, index) => {
+      return {...row, id: index}
     })
    console.log(dataParse)
     setValues(dataParse)
