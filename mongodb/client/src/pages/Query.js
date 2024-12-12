@@ -20,7 +20,7 @@ const Query = () => {
   const [toggleValue, setToggleValue] = useState('table');
 
   const handleBackClick = (queryNumber) => {
-    navigate(`/query`);
+    navigate(`/`);
   }
 
   const handleToggleChange = (event, toggleChange) => {
