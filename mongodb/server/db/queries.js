@@ -24,17 +24,56 @@ module.exports.query1 = async () => {
 
 // Query 2
 module.exports.query2 = async () => {
-
   // People learning to code in the USA that work remotely and have a job satisfacion <= 3
-  query = {
-    Country: "United States of America",
-    MainBranch: "I am learning to code",
-    RemoteWork: "Remote",
-    JobSat: { $lte : 3.0 }
+  query = [
+    { $match: {
+        JobSat: { $ne: NaN },
+        Country: { $ne: null }
+      }
+    },
+    { $group: {
+        _id: "$Country",
+        totalCount: { $sum: 1 }, // Total documents per country
+        conditionCount: {
+          $sum: {
+            $cond: [
+              {
+                $lte: ["$JobSat", 5.0] ,
+              },
+              1, // If condition matches, increment by 1
+              0  // Otherwise, increment by 0
+            ]
+          }
+        }
+      }
+    },
+    { $project: {
+        _id: 0,
+        Country: "$_id",
+        Percentage: {
+          $concat: [
+            {
+              $toString: {
+                $round: [
+                  {
+                    $multiply: [
+                      { $divide: ["$conditionCount", "$totalCount"] },
+                      100
+                    ]
+                  },
+                  2
+                ]
+              }
+            },
+            "%"
+          ]
+        }
+      }
+    }
+    
+  ]
 
-  }
-
-  return await Developers.find(query).toArray((error, documents) => {
+  return await Developers.aggregate(query).toArray((error, documents) => {
     return documents
   });
 }
@@ -43,8 +82,7 @@ module.exports.query2 = async () => {
 module.exports.query3 = async () => {
   // Number of developers that have a professional degree grouped by country
   query = [
-    { 
-      $match: {
+    { $match: {
         MainBranch: "I am a developer by profession",
         EdLevel: {$regex: "Professional degree"} 
       }
@@ -55,15 +93,13 @@ module.exports.query3 = async () => {
         Count: { $sum: 1 } 
       } 
     },
-    {
-      $project: {
+    { $project: {
         _id: 0,
         Country: '$_id',
         Count: 1
       }
     },
-    {
-      $sort: {
+    { $sort: {
         Count: -1 
       }
     }    
@@ -78,28 +114,23 @@ module.exports.query3 = async () => {
 module.exports.query4 = async () => {
   // Learning resources are prefered by developers based on their education level
   query = [
-  
     { $unwind: "$LearnCode" },
-    
-    {
-      $group: {
+    { $group: {
         _id: { EdLevel: "$EdLevel", LearnCode: "$LearnCode" },
         count: { $sum: 1 }
       }
     },
-    
-    {
-      $group: {
+    { $group: {
         _id: "$_id.EdLevel",
         mostPreferredResource: { $first: "$_id.LearnCode" },
         maxCount: { $first: "$count" }
       }
     },
-    
-    { $sort: { _id: 1 } },
-    
-    {
-      $project: {
+    { $sort: { 
+        _id: 1 
+      } 
+    },
+    { $project: {
         _id: 0,
         EdLevel: "$_id",
         PreferedResource: "$mostPreferredResource"
@@ -116,21 +147,18 @@ module.exports.query4 = async () => {
 module.exports.query5 = async () => {
   // Anual salary for developers based on the education level
   query = [
-    { 
-      $match: { 
+    { $match: { 
         CompTotal: { $ne: NaN }, 
         EdLevel: { $ne: null}, 
         Currency: { $eq: "USD\tUnited States dollar" }
       } 
     },
-    { 
-      $group: { 
+    { $group: { 
         _id: {EdLevel:"$EdLevel"}, 
         averageSalary: { $avg: "$CompTotal" } 
       } 
     },
-    {
-      $project: {
+    { $project: {
         _id: 0,
         EdLevel: "$_id.EdLevel",
         AverageSalary: { $round: ["$averageSalary", 2] } // Round to 2 decimal places
@@ -149,41 +177,33 @@ module.exports.query5 = async () => {
 module.exports.query6 = async () => {
   // Database used based on the organization size
   query = [
-    {
-      $match: {
-        OrgSize: { $ne: null },
+    { $match: {
+        OrgSize: { $ne: NaN },
         DatabaseHaveWorkedWith: { $ne: null, $not: { $size: 0 } }
       }
     },
-    
     { $unwind: "$DatabaseHaveWorkedWith" },
-    
-    {
-      $group: {
+    { $group: {
         _id: { OrgSize: "$OrgSize", Database: "$DatabaseHaveWorkedWith" },
         count: { $sum: 1 }
       }
     },
-    
-    {
-      $sort: { 
+    { $sort: { 
         "_id.OrgSize": 1, 
         count: -1 
       }
     },
-    
-    {
-      $group: {
+    { $group: {
         _id: "$_id.OrgSize",
         mostUsedDatabase: { $first: "$_id.Database" },
         count: { $first: "$count" }
       }
     },
-    
-    { $sort: { _id: 1 } },
-    
-    {
-      $project: {
+    { $sort: { 
+        _id: 1 
+      } 
+    },
+    { $project: {
         _id: 0,
         OrgSize: "$_id",
         MostUsedDatabase: "$mostUsedDatabase",
@@ -200,15 +220,13 @@ module.exports.query6 = async () => {
 module.exports.query7 = async () => {
   //Most desired database to work with based on age group
   query = [
-    { 
-      $match: { 
+    { $match: { 
         DatabaseWantToWorkWith: { $ne: null }, 
         Age: { $ne: null },
       }
     },
     { $unwind: "$DatabaseWantToWorkWith" },
-    { 
-      $group: {
+    { $group: {
         _id: 
         {
           Database: "$DatabaseWantToWorkWith",
@@ -217,17 +235,19 @@ module.exports.query7 = async () => {
         count: { $sum: 1 } 
       }
     },
-    {
-      $project: {
+    { $project: {
         _id: 0,
         Database: "$_id.Database",
         Age: "$_id.Age",
         Count: "$count"
       }
     },
-    {$sort: {Age: 1, Count: -1}},
-    {
-      $group: {
+    { $sort: {
+        Age: 1, 
+        Count: -1
+      }
+    },
+    { $group: {
         _id: "$Age", // Group by age only
         Database: { $first: "$Database" }, // Take the first database for each age group (most desired to work with)
         Count: { $first: "$Count" } // Get the count of the most used database
@@ -238,8 +258,7 @@ module.exports.query7 = async () => {
         Count: -1
       }
     },
-    {
-      $project: {
+    { $project: {
         _id: 0,
         Age: "$_id",
         MostDesiredDatabase: "$Database",
@@ -349,65 +368,36 @@ module.exports.query9 = async () => {
 
 
 module.exports.query10 = async () => {
-  //Employment status based on country 
+  //Average number of languages worked with and desired to work with based on developer type
   query = [
     {
       $match: {
-        '$OrgSize': { $ne: null },
-        '$OrgSize': { $ne: NaN }, 
-        '$DatabaseHaveWorkedWith': { $ne: null, $not: { $size: 0 } }
+        LanguageHaveWorkedWith: {$ne: null},
+        DevType: {$ne: NaN},
+      }
+    },
+    {
+      $project: {
+        DevType: "$DevType",
+        LanguagesWorkedWithCount: {$size: "$LanguageHaveWorkedWith"},
+        LanguagesDesiredToWorkWithCount: {$size: "$LanguageWantToWorkWith"},
       }
     },
     {
       $group: {
-        _id: '$OrgSize',
-        count: { $sum: 1 }
-      }
-    }
-    
-
-    //db.Developers.aggregate([{$match: {OrgSize: { $ne: null }, OrgSize: { $ne: NaN }, DatabaseHaveWorkedWith: { $ne: null, $not: { $size: 0 } }}},{ $group: {_id: '$OrgSize',count: {$sum: 1}}}])
-    /*{
-      $match: {
-        OrgSize: { $ne: null },
-        DatabaseHaveWorkedWith: { $ne: null, $not: { $size: 0 } }
+        _id: '$DevType',         
+        AvgLanguagesWorkedWith: {$avg: "$LanguagesWorkedWithCount"},
+        AvgLanguagesDesiredToWorkWith: {$avg: "$LanguagesDesiredToWorkWithCount"},
       }
     },
-    
-    { $unwind: "$DatabaseHaveWorkedWith" },
-    
-    {
-      $group: {
-        _id: { OrgSize: "$OrgSize", Database: "$DatabaseHaveWorkedWith" },
-        count: { $sum: 1 }
-      }
-    },
-    
-    {
-      $sort: { 
-        "_id.OrgSize": 1, 
-        count: -1 
-      }
-    },
-    
-    {
-      $group: {
-        _id: "$_id.OrgSize",
-        mostUsedDatabase: { $first: "$_id.Database" },
-        count: { $first: "$count" }
-      }
-    },
-    
-    { $sort: { _id: 1 } },
-    
     {
       $project: {
         _id: 0,
-        OrgSize: "$_id",
-        MostUsedDatabase: "$mostUsedDatabase",
-        Count: "$count"
+        DevType: '$_id',
+        AvgLanguagesWorkedWith: {$round: ["$AvgLanguagesWorkedWith", 1]},
+        AvgLanguagesDesiredToWorkWith: {$round: ["$AvgLanguagesDesiredToWorkWith", 1]},
       }
-    }*/
+    }
   ]
 
   return await Developers.aggregate(query).toArray((error, documents) => {
