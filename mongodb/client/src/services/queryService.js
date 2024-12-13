@@ -5,8 +5,6 @@ import url from '../config';
 export async function getQuery (queryId, setValues) {
   await axios.get(`${url}query${queryId}`)
   .then(response => {
-    console.log(response.data.results
-    )
     let dataParse = response.data.results.map((row, index) => {
       return {...row, id: index}
     })

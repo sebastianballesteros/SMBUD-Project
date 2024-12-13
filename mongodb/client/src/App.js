@@ -11,7 +11,7 @@ import theme from './styles/theme';
 function App() {
 
   useEffect(() => {
-    console.log(process.env.REACT_APP_BACKEND)
+    console.log(process.env.REACT_APP_NODE_ENV);
   }, []);
 
   return (
