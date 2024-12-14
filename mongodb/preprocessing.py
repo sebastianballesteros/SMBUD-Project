@@ -11,8 +11,7 @@ df = pd.read_csv(csv_file)
 if 'check' in df.columns:
     df.drop('check', axis=1, inplace=True)
 
-
-# Drop columns with more than 80% missing values
+# Drop columns with more than 60% missing values
 threshold = 0.60  
 df = df.loc[:, df.isna().mean() <= threshold]
 

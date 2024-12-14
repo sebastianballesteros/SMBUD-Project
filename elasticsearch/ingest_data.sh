@@ -8,9 +8,14 @@ PYTHON_SCRIPT="process_file.py"
 # ES_INDEX="test_index_v3"
 # ES_HOST="http://localhost:9200"
 # PASSWORD=8kScDrZY
+# ES_INDEX="reviews_index"
+# ES_HOST="https://localhost:9200"
+# PASSWORD=gCLiJEL7E*+uA55wZOqg
+# ES_USER="elastic"
 ES_INDEX="reviews_index"
-ES_HOST="https://localhost:9200"
-PASSWORD=gCLiJEL7E*+uA55wZOqg
+ES_USER="Test1"
+ES_HOST="https://7c9e0123f447443cb786651acef7ec40.us-central1.gcp.cloud.es.io:443"
+PASSWORD=M3JIUXRaTUJ3Rmx0eUJDT3ltZEM6a3IxSEQ2YmtRaUdVTnZYZlZhSW9idw==
 CHUNK_SIZE=5000  # Number of lines per chunk
 
 # Check if the input folder exists
@@ -51,7 +56,7 @@ for file in "$INPUT_FOLDER"/*; do
     for chunk in "${output_file}_chunk_"*; do
       echo "Indexing chunk: $chunk into Elasticsearch..."
 
-      curl -k -X POST -u "elastic:$PASSWORD" "$ES_HOST/$ES_INDEX/_bulk" -H "Content-Type: application/json" --data-binary "@$chunk"
+      curl -k -X POST "$ES_HOST/$ES_INDEX/_bulk" -H "Authorization: ApiKey $PASSWORD" -H "Content-Type: application/json" --data-binary "@$chunk"
       if [ $? -ne 0 ]; then
         echo "Error: Failed to index chunk $chunk."
       else
