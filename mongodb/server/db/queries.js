@@ -24,7 +24,7 @@ module.exports.query1 = async () => {
 
 // Query 2
 module.exports.query2 = async () => {
-  // People learning to code in the USA that work remotely and have a job satisfacion <= 3
+  // People that whave a job satisfacion <= 5 based on country
   query = [
     { $match: {
         JobSat: { $ne: NaN },
@@ -161,10 +161,10 @@ module.exports.query5 = async () => {
     { $project: {
         _id: 0,
         EdLevel: "$_id.EdLevel",
-        AverageSalary: { $round: ["$averageSalary", 2] } // Round to 2 decimal places
+        AverageSalary: { $round: ["$averageSalary", 2] }
       }
     },
-    { $sort: { AverageSalary: -1 } },
+    { $sort: { AverageSalary: -1 } }
   ]
 
   return await Developers.aggregate(query).toArray((error, documents) => {
@@ -249,8 +249,8 @@ module.exports.query7 = async () => {
     },
     { $group: {
         _id: "$Age", // Group by age only
-        Database: { $first: "$Database" }, // Take the first database for each age group (most desired to work with)
-        Count: { $first: "$Count" } // Get the count of the most used database
+        Database: { $first: "$Database" },
+        Count: { $first: "$Count" }
       }
     },
     { $sort: { 
@@ -288,12 +288,12 @@ module.exports.query8 = async () => {
         YearsCodeNumeric: {
           $cond: {
             if: { $eq: ["$YearsCode", "More than 50 years"] },
-            then: 50,  // You can choose to use 50 or another value if needed
+            then: 50,  
             else: {
               $cond: {
                 if: { $eq: ["$YearsCode", "Less than 1 year"] },
-                then: 0,  // Convert "Less than a year" to 0 (or 0.5, depending on your context)
-                else: { $toInt: "$YearsCode" }  // Convert other values to integers
+                then: 0,  // Convert "Less than a year" to 0
+                else: { $toInt: "$YearsCode" }  // Convert to integer
               }
             }
           }
@@ -370,8 +370,7 @@ module.exports.query9 = async () => {
 module.exports.query10 = async () => {
   //Average number of languages worked with and desired to work with based on developer type
   query = [
-    {
-      $match: {
+    { $match: {
         LanguageHaveWorkedWith: {$ne: null},
         DevType: {$ne: NaN},
       }
@@ -379,23 +378,35 @@ module.exports.query10 = async () => {
     {
       $project: {
         DevType: "$DevType",
-        LanguagesWorkedWithCount: {$size: "$LanguageHaveWorkedWith"},
-        LanguagesDesiredToWorkWithCount: {$size: "$LanguageWantToWorkWith"},
+        LanguagesWorkedWithCount: {
+          $size: "$LanguageHaveWorkedWith"
+        },
+        LanguagesDesiredToWorkWithCount: {
+          $size: "$LanguageWantToWorkWith"
+        },
       }
     },
     {
       $group: {
         _id: '$DevType',         
-        AvgLanguagesWorkedWith: {$avg: "$LanguagesWorkedWithCount"},
-        AvgLanguagesDesiredToWorkWith: {$avg: "$LanguagesDesiredToWorkWithCount"},
+        AvgLanguagesWorkedWith: {
+          $avg: "$LanguagesWorkedWithCount"
+        },
+        AvgLanguagesDesiredToWorkWith: {
+          $avg: "$LanguagesDesiredToWorkWithCount"
+        },
       }
     },
     {
       $project: {
         _id: 0,
         DevType: '$_id',
-        AvgLanguagesWorkedWith: {$round: ["$AvgLanguagesWorkedWith", 1]},
-        AvgLanguagesDesiredToWorkWith: {$round: ["$AvgLanguagesDesiredToWorkWith", 1]},
+        AvgLanguagesWorkedWith: {
+          $round: ["$AvgLanguagesWorkedWith", 1]
+        },
+        AvgLanguagesDesiredToWorkWith: {
+          $round: ["$AvgLanguagesDesiredToWorkWith", 1]
+        },
       }
     }
   ]
