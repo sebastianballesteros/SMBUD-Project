@@ -12,7 +12,7 @@ const QueryInfo = () => {
       ]
     },
     {
-      description: 'Porcentage of people with job satisfaction lower or equal than based on the country 5 out of 10 ',
+      description: 'Percentage of people with job satisfaction lower or equal than based on the country 5 out of 10 ',
       columns:
       [
         { field: "Country" , headerName: "Country", flex: 0.3 },
@@ -55,10 +55,10 @@ const QueryInfo = () => {
   {
    description: 'Most desired database based on the age group',
    columns:
-   [ 
+   [
       { field: "Age" , headerName: "Age", flex: 0.2 },
       { field: "MostDesiredDatabase" , headerName: "Most desired database to work with", flex: 0.4},
-      { field: "Count" , headerName: "Country", flex: 0.4 }, 
+      { field: "Count" , headerName: "Country", flex: 0.4 },
    ]
   },
   {
@@ -74,7 +74,7 @@ const QueryInfo = () => {
    columns:
    [
       { field: "Employment" , headerName: "Employment", flex: 0.4 },
-      { field: "Country" , headerName: "Country", flex: 0.3 }, 
+      { field: "Country" , headerName: "Country", flex: 0.3 },
       { field: "Count", headerName: "Count", flex: 0.3}
    ]
   },
