@@ -11,13 +11,31 @@ const Developers = database.collection("Developers");
 module.exports.query1 = async () => {
 
   // Define query
-  query = {
-    Country: "Italy",
-    MainBranch: "I code primarily as a hobby",
-    Age: "18-24 years old",
-  }
+  query = [
+    { $match: {
+        Country: "Italy",
+        MainBranch: "I code primarily as a hobby",
+        Age: "18-24 years old"
+      }
+    }, 
+    { $replaceWith: 
+      { $arrayToObject: {
+          $filter: {
+            input: { $objectToArray: "$$ROOT" },
+            as: "field",
+            cond: { 
+              $and: [ 
+                { $ne: ["$$field.v", NaN] }, 
+                { $ne: [{ $type: "$$field.v" }, "array"] } 
+              ] 
+            }
+          }
+        }
+      }
+    }
+  ]
 
-  return await Developers.find(query).toArray((error, documents) => {
+  return await Developers.aggregate(query).toArray((error, documents) => {
     return documents
   });
 }
@@ -33,16 +51,10 @@ module.exports.query2 = async () => {
     },
     { $group: {
         _id: "$Country",
-        totalCount: { $sum: 1 }, // Total documents per country
-        conditionCount: {
-          $sum: {
-            $cond: [
-              {
-                $lte: ["$JobSat", 5.0] ,
-              },
-              1, // If condition matches, increment by 1
-              0  // Otherwise, increment by 0
-            ]
+        total: { $sum: 1 }, // Total documents per country
+        condition: { // If condition matches, increment by 1
+          $sum: { 
+            $cond: [{ $lte: ["$JobSat", 5.0] }, 1, 0]
           }
         }
       }
@@ -52,25 +64,17 @@ module.exports.query2 = async () => {
         Country: "$_id",
         Percentage: {
           $concat: [
-            {
-              $toString: {
+            { $toString: {
                 $round: [
-                  {
-                    $multiply: [
-                      { $divide: ["$conditionCount", "$totalCount"] },
-                      100
-                    ]
-                  },
+                  { $multiply: [ { $divide: ["$condition", "$total"] }, 100]},
                   2
                 ]
               }
-            },
-            "%"
+            },"%"
           ]
         }
       }
     }
-    
   ]
 
   return await Developers.aggregate(query).toArray((error, documents) => {
@@ -199,10 +203,6 @@ module.exports.query6 = async () => {
         count: { $first: "$count" }
       }
     },
-    { $sort: { 
-        _id: 1 
-      } 
-    },
     { $project: {
         _id: 0,
         OrgSize: "$_id",
@@ -284,15 +284,13 @@ module.exports.query8 = async () => {
     },    
     { $project: 
       {
-        DevType: "$DevType",
+        DevType: 1,
         YearsCodeNumeric: {
           $cond: {
-            if: { $eq: ["$YearsCode", "More than 50 years"] },
-            then: 50,  
+            if: { $eq: ["$YearsCode", "More than 50 years"] }, then: 50,  
             else: {
               $cond: {
-                if: { $eq: ["$YearsCode", "Less than 1 year"] },
-                then: 0,  // Convert "Less than a year" to 0
+                if: { $eq: ["$YearsCode", "Less than 1 year"] }, then: 0,  // "Less than a year" = 0
                 else: { $toInt: "$YearsCode" }  // Convert to integer
               }
             }
@@ -311,10 +309,6 @@ module.exports.query8 = async () => {
         DevType: "$_id.DevType",
         AverageYearsCoding: { $round: ["$YearsCode", 2] } ,
       } 
-    },
-    { $sort: { 
-        "AverageYearsCoding": -1 
-      }
     }
   ]
 
@@ -355,8 +349,6 @@ module.exports.query9 = async () => {
     {
       $sort: { 
         Country: 1,
-        Count: -1,
-        Employment: -1
       }
     }
   ]
