@@ -1,5 +1,5 @@
 import React from 'react'
-import {BrowserRouter, Routes , Route} from "react-router-dom";
+import {BrowserRouter, Routes , Route, Navigate} from "react-router-dom";
 
 import Home from "../pages/Home";
 import Query from "../pages/Query";
@@ -13,7 +13,7 @@ const Router = () => {
 
           <Route exact path="/" element={<Home/>} />
           <Route exact path="/query/:queryNumber" element={<Query/>}/>
-          <Route path="*" element={<Home/>}/>
+          <Route path="*" element={<Navigate to="/" replace />} />
 
         </Routes >
       </React.Fragment>

@@ -15,16 +15,16 @@ const QueryInfo = () => {
       description: 'Percentage of people with job satisfaction lower or equal than based on the country 5 out of 10 ',
       columns:
       [
-        { field: "Country" , headerName: "Country", flex: 0.3 },
-        { field: "Percentage" , headerName: "Percentage", flex: 0.7 },
+        { field: "Country" , headerName: "Country", flex: 0.4 },
+        { field: "Percentage" , headerName: "Percentage", flex: 0.6 },
       ]
     },
     {
      description: 'Number of developers that have a professional degree grouped by country',
      columns:
      [
-       { field: "Country" , headerName: "Country", flex: 0.3 },
-       { field: "Count" , headerName: "Count", flex: 0.2 },
+       { field: "Country" , headerName: "Country", flex: 0.4 },
+       { field: "Count" , headerName: "Count", flex: 0.6 },
      ]
    },
    {
